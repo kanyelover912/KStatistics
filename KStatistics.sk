@@ -1,0 +1,124 @@
+#
+#					STATS SKRIPT
+#-------------------------------------------------------------------------------------------------
+#
+#			by: kanyelover
+#			 
+#			please give credits if used on a server!
+#
+
+
+
+
+Options:
+	mainColour: <##4382e8>
+#	➥ Changes the main colour, you can use <##000000> format or minecraft color codes!
+	secondColour: <##75aaff>
+#	➥ Changes the secondary colour, you can use <##000000> format or minecraft color codes!
+	permissionOpen: stats.open
+#	➥ Permission needed to open the stats gui
+	permissionSet: stats.set
+#	➥ Permission needed to set the stats
+	permissionMessage: &4&lYou can't do this!
+#	➥ Permission message
+	fillItem: cyan stained glass pane
+#   ➥ Sets the fill item 
+	statPrefix: &8[&cStats&8]
+#   ➥ Stat prefix shown on set commands
+
+		
+	
+on join:
+	if {stats::%uuid of player%::firstTime} is not set:
+		set {stats::%uuid of player%::firstTime} to "%now%"
+	if {stats::%uuid of player%::deaths} is not set:
+		set {stats::%uuid of player%::deaths} to 0 
+	if {stats::%uuid of player%::kills} is not set:
+		set {stats::%uuid of player%::kills} to 0 
+	if {stats::%uuid of player%::blocksBroken} is not set:
+		set {stats::%uuid of player%::blocksBroken} to 0
+
+on death:
+	add 1 to {stats::%victim's uuid%::deaths}
+	if attacker is a player:
+		add 1 to {stats::%attacker's uuid%::kills}
+
+on break:
+	add 1 to {stats::%uuid of player%::blocksBroken}
+
+on join:
+	if {hourCounter::%player's uuid%} is not set:
+		set {hourCounter::%player's uuid%} to 0 
+	if {minuteCounter::%player's uuid%} is not set:
+		set {minuteCounter::%player's uuid%} to 0 
+	set {counter.%player%} to true
+	while {counter.%player%} is true:
+		wait 1 minute
+		add 1 to {minuteCounter::%player's uuid%}
+		if {minuteCounter::%player's uuid%} = 60:
+			set {minuteCounter::%player's uuid%} to 0
+			add 1 to {hourCounter::%player's uuid%}
+
+
+
+
+
+command /stats [<offline player>] [<text>] [<text>] [<number>] [<number>]:
+    aliases: /playerstats, /statistics
+    usage: /stats <player> <set> <stat> <number>
+    description: open the statistics menu
+    permission: {@permissionOpen}
+    permission message: {@permissionMessage}
+    trigger:
+        if arg-1 is not set:
+            set metadata tag "statsGui" of player to chest inventory with 5 rows named "{@mainColour}&lSTATS"
+            set slots 0 and 1 and 2 and 3 and 4 and 5 and 6 and 7 and 8 and 9 and 10 and 11 and 12 and 13 and 14 and 15 and 16 and 17 and 18 and 19 and 20 and 21 and 22 and 23 and 24 and 25 and 26 and 27 and 28 and 29 and 30 and 31 and 32 and 33 and 34 and 35 and 36 and 37 and 38 and 39 and 40 and 41 and 42 and 43 and 44 and 45 of metadata tag "statsGui" of player to {@fillItem} named "{@mainColour}&lStats"
+            set slot 10 of metadata tag "statsGui" of player to grass block named "{@mainColour}&lBlocks broken" with lore "{@secondColour}You have broken {@mainColour}%{stats::%uuid of player%::blocksBroken}%{@secondColour} block(s)"
+            set slot 12 of metadata tag "statsGui" of player to iron sword named "{@mainColour}&lKills" with lore "{@secondColour}You killed {@mainColour}%{stats::%uuid of player%::kills}%{@secondColour} player(s)"
+            set slot 14 of metadata tag "statsGui" of player to player's skull named "{@mainColour}&lDeaths" with lore "{@secondColour}You died {@mainColour}%{stats::%uuid of player%::deaths}%{@secondColour} time(s)"
+            set slot 16 of metadata tag "statsGui" of player to clock named "{@mainColour}&lPlay time" with lore "{@secondColour}You played {@mainColour}%{hourCounter::%player's uuid%}%{@secondColour} hours and {@mainColour}%{minuteCounter::%player's uuid%}% {@secondColour}minutes"
+            set slot 31 of metadata tag "statsGui" of player to sunflower named "{@mainColour}&lFirst join" with lore "{@secondColour}Your first join was on {@mainColour}%{stats::%uuid of player%::firstTime}%"
+            open (metadata tag "statsGui" of player) to player
+        else if arg-1 is set:
+            if arg-2 is not set:
+                set {player} to arg-1
+                set metadata tag "statsGui" of player to chest inventory with 5 rows named "{@mainColour}&lSTATS"
+                set slots 0 and 1 and 2 and 3 and 4 and 5 and 6 and 7 and 8 and 9 and 10 and 11 and 12 and 13 and 14 and 15 and 16 and 17 and 18 and 19 and 20 and 21 and 22 and 23 and 24 and 25 and 26 and 27 and 28 and 29 and 30 and 31 and 32 and 33 and 34 and 35 and 36 and 37 and 38 and 39 and 40 and 41 and 42 and 43 and 44 and 45 of metadata tag "statsGui" of player to {@fillItem} named "{@mainColour}&lStats"
+                set slot 10 of metadata tag "statsGui" of player to grass block named "{@mainColour}&lBlocks broken" with lore "{@secondColour}%{player}% have broken {@mainColour}%{stats::%uuid of arg-1%::blocksBroken}%{@secondColour} block(s)"
+                set slot 12 of metadata tag "statsGui" of player to iron sword named "{@mainColour}&lKills" with lore "{@secondColour}%{player}% killed {@mainColour}%{stats::%uuid of arg-1%::kills}%{@secondColour} player(s)"
+                set slot 14 of metadata tag "statsGui" of player to player's skull named "{@mainColour}&lDeaths" with lore "{@secondColour}%{player}% died {@mainColour}%{stats::%uuid of arg-1%::deaths}%{@secondColour} time(s)"
+                set slot 16 of metadata tag "statsGui" of player to clock named "{@mainColour}&lDeaths" with lore "{@secondColour}%{player}% played {@mainColour}%{hourCounter::%uuid of arg-1%}%{@secondColour} hours and {@mainColour}%{minuteCounter::%uuid of arg-1%}% {@secondColour}minutes"
+                set slot 31 of metadata tag "statsGui" of player to sunflower named "{@mainColour}&lFirst join" with lore "{@secondColour}%{player}%'s first join was on {@mainColour}%{stats::%uuid of arg-1%::firstTime}%"
+                open (metadata tag "statsGui" of player) to player
+            else if arg-2 = "set":
+                player has permission "{@permissionSet}":
+                    set {statNumber} to arg-4
+                    set {player} to arg-1
+                    if arg-3 = "blocksmined":
+                        set {stats::%uuid of arg-1%::blocksBroken} to arg-4
+                        send "{@statPrefix}&f stat &7&l%arg-3%&f of &7&l%arg-1%&f was set to &7&l%{statNumber}%"
+                    else if arg-3 = "kills":
+                        set {stats::%uuid of arg-1%::kills} to arg-4
+                        send "{@statPrefix}&f stat &7&l%arg-3%&f of &7&l%arg-1%&f was set to &7&l%{statNumber}%"
+                    
+                    else if arg-3 = "deaths":
+                        set {stats::%uuid of arg-1%::deaths} to arg-4
+                        send "{@statPrefix}&f stat &7&l%arg-3%&f of &7&l%arg-1%&f was set to &7&l%{statNumber}%"
+
+                    else if arg-3 = "playtime":
+                        set {hourCounter::%uuid of arg-1%} to arg-4
+                        set {minuteCounter::%uuid of arg-1%} to arg-5
+                        send "{@statPrefix}&f stat &7&l%arg-3%&f of &7&l%arg-1%&f was set to &7&l%{statNumber}% hours and %arg-5% minutes"
+                    
+                else:
+                    send "{@permissionMessage}" to player
+                
+
+                
+				
+
+
+on inventory click:
+	if event-inventory = (metadata tag "statsGui" of player):
+		cancel event
+	
